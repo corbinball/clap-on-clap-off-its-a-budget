@@ -70,4 +70,14 @@ function checkDatabase() {
     }
   };
 
+  const saveRecord = (record) => {
+    console.log('Saveing records...');
+
+    const transaction = db.transaction(['ClapMoney'], 'readwrite');
   
+    const store = transaction.objectStore('ClapMoney');
+  
+    store.add(record);
+  };
+  
+  window.addEventListener('online', checkDatabase);
