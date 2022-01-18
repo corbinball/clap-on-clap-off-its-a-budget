@@ -19,3 +19,9 @@ if (db.objectStoreNames.length ===0){
 }
 
 };
+
+request.onerror = function (e) {
+    console.log(`Error: ${e.target.errorCode}`);
+};
+
+
