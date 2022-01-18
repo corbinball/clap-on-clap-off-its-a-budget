@@ -3,7 +3,7 @@ let db;
 let clapOnOffVersion;
 
 
-const request = indexedDB.open("Clap off Database", 1);
+const request = indexedDB.open("Clap on off budget Database", 1);
 
 request.onupgradeneeded = function (e) {
   console.log(request.result.name);
@@ -25,3 +25,36 @@ request.onerror = function (e) {
 };
 
 
+function checkDatabase() {
+    console.log('Checking ClapMondey db');
+  
+    let transaction = db.transaction(['ClapMoney'], 'readwrite');
+  
+    const store = transaction.objectStore('ClapMoney');
+  
+    const getAll = store.getAll();
+  
+    getAll.onsuccess = function () {
+      if (getAll.result.length > 0) {
+        fetch('/api/transaction/bulk', {
+          method: 'POST',
+          body: JSON.stringify(getAll.result),
+          headers: {
+            Accept: 'application/json, text/plain, */*',
+            'Content-Type': 'application/json',
+          },
+        })
+          .then((response) => response.json())
+          .then((res) => {
+            if (res.length !== 0) {
+              transaction = db.transaction(['ClapMoney'], 'readwrite');
+  
+              const currentStore = transaction.objectStore('ClapMoney');
+  
+              currentStore.clear();
+              console.log('Clearing ClapMoney');
+            }
+          });
+      }
+    };
+  }
